@@ -3,7 +3,7 @@ import socket, threading
 SERVER_ADDRESS = '0.0.0.0'
 SERVER_PORT = 3434
 
-def handle_messages(connection):
+def handleMessages(connection):
     while True:
         try:
             msg = connection.recv(1024)

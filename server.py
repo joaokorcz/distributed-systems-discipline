@@ -6,7 +6,7 @@ LISTENING_PORT = 3434
 users = {}
 topics = {}
 
-def handle_user_connection(connection, address):
+def handleUserConnection(connection, address):
     while True:
         try:
             msg = connection.socket.recv(1024)
@@ -83,16 +83,16 @@ def handle_user_connection(connection, address):
                     connection.socket.send(b'Seus topicos: ' + decodeTopics(connection.topics))
 
                 elif msg == b'QUIT':
-                    remove_connection(connection.name)
+                    removeConnection(connection.name)
                     break
 
             else:
-                remove_connection(connection.name)
+                removeConnection(connection.name)
                 break
 
         except Exception as e:
             print(f'Erro na conexão: {e}')
-            remove_connection(connection.name)
+            removeConnection(connection.name)
             break
 
 def decodeTopics(topics):
@@ -103,7 +103,7 @@ def decodeTopics(topics):
             decoded_topics += ', '
     return decoded_topics.encode()
 
-def remove_connection(name):
+def removeConnection(name):
     if name in users:
         connection = users[name]
         connection.socket.close()
@@ -125,7 +125,7 @@ def server():
 
             connection = Connection(socket_connection, address)
             
-            threading.Thread(target=handle_user_connection, args=[connection, address]).start()
+            threading.Thread(target=handleUserConnection, args=[connection, address]).start()
 
     except Exception as e:
         print(f'Erro ao instanciar socket: {e}')
@@ -133,7 +133,7 @@ def server():
     finally:
         if len(users) > 0:
             for name in users:
-                remove_connection(name)
+                removeConnection(name)
 
         socket_instance.close()
 
