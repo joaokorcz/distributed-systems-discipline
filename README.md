@@ -17,5 +17,5 @@ Comando para rodar o cliente:
 - **INSTOPIC** (*nome do canal*): cria um canal e junta-se a ele automaticamente.
 - **MSGTOPIC** (*nome do canal*) (*mensagem*): envia uma mensagem para o canal especificado.
 - **LIST** (*nome do canal*): lista todos os usuários que estão no canal especificado.
-- **MYTOPICS**: lista
-- **QUIT**: usuário sai de todos os canais cadastrados
+- **MYTOPICS**: lista todos os canais em que o usuário está inscrito.
+- **QUIT**: usuário sai de todos os canais cadastrados.
