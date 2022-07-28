@@ -1,6 +1,7 @@
 import socket, threading
 from Connection import Connection
 
+# Os dois clientes precisam estar na mesma porta para se comunicarem
 LISTENING_PORT = 3434
 
 users = {}
@@ -10,7 +11,7 @@ def handleUserConnection(connection, address):
     while True:
         try:
             msg = connection.socket.recv(1024)
-
+   
             if msg:
                 if b' ' in msg:
                     command, content = msg.split(b' ', 1)
@@ -28,44 +29,55 @@ def handleUserConnection(connection, address):
                             ## Se o nick já existir no servidor, impede
                             if name.lower() in users:
                                 connection.socket.send(b'Nick ja existe')
-                            ## Caso contrário (nick não existe ainda), adiciona
+                            ## Caso contrário (nick não existe ainda), adiciona o nome
                             else:
                                 connection.name = name
                                 users[name] = connection
                     
+                    # Se inscrive/cria um canal com um nome
                     elif command == b'INSTOPIC':
                         topic = content.lower()
-
+                        
                         if topic not in topics:
                             topics[topic] = [connection.name]
                             connection.topics.append(topic)
                             connection.socket.send(b'Seus topicos: ' + decodeTopics(connection.topics))
+                            
                         else:
+                            # Caso o nome já esteja cadastrado no tópico, impede
                             if connection.name in topics[topic]:
                                 connection.socket.send(b'Nick ja existente no topico')
+                                
+                            # Caso o nome não esteja cadastrado no tópico, inscreve
                             else:
                                 topics[topic].append(connection.name)
                                 connection.topics.append(topic)
                                 connection.socket.send(b'Seus topicos: ' + decodeTopics(connection.topics))
                     
+                    # Envia mensagem para um canal 
                     elif command == b'MSGTOPIC':
                         if len(content.split(b' ', 1)) != 2:
                             connection.socket.send(b'Formato invalido')
                         else: 
                             topic, msg = content.split(b' ', 1)
                             topic = topic.lower()
-
+                            
+                            # Se o tópico não existe, envia mensagem de erro
                             if topic not in topics:
                                 connection.socket.send(b'Topico inexistente')
+                            
                             else:
                                 found_topic = topics[topic]
+                                # Caso a conexão exista, mas o usuário não esteja cadastrado, envia mensagem de erro
                                 if connection.name not in found_topic:
                                     connection.socket.send(b'Inscricao no topico nao encontrada')
+                                # Caso esteja tudo certo, envia mensagem para todos os usuários inscritos no canal
                                 else:
                                     for client in found_topic:
                                         if client != connection.name:
                                             users[client].socket.send(topic + b' - ' + connection.name + b': ' + msg)
-                                    
+
+                    # Lista todos os usuários inscritos em um dado canal
                     elif command == b'LIST':
                         topic = content
 
@@ -79,9 +91,11 @@ def handleUserConnection(connection, address):
                                 for name in found_topic:
                                     connection.socket.send(name + b'\n')
 
+                # Lista os canais que o usuário está cadastrado
                 elif msg == b'MYTOPICS':
                     connection.socket.send(b'Seus topicos: ' + decodeTopics(connection.topics))
-
+    
+                # Desinscreve o usuários de todos os canais em que ele está inscrito
                 elif msg == b'QUIT':
                     removeConnection(connection.name)
                     break
