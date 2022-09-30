@@ -1,6 +1,10 @@
 # distributed-systems-discipline
 
 # Trabalho 1 - Sistemas Distribuídos
+
+- Nome: João Otavio Martini Korczovei, RA: 790913
+- Nome: Mateus Grota Nishimura Ferro, RA: 771043
+
 Implementação de um chat que utiliza a arquitetura *publish-subscribe*, fazendo com que todos os usuários(inscritos) em um dado canal, recebam as mensagem(eventos) enviadas para o publicador(canal). Para o trabalho foi utilizado o RabbitMQ.
 
 Foi implementado duas classes para a representação das lojas e fábricas, sendo que em cada classe é estabelecida a conexão com a sua respectiva queue, no caso das fábricas com a queue 'fabrica' e no caso das lojas com a queue 'reposicao'. A queue 'reposicao' é entre as lojas e o centro de distribuição, enviando mensagens para o centro de distribuição quando certos itens da loja entram no farol vermelho. Ao enviar a mensagem para o centro de distribuição, o centro de distribuição irá notificar a fábrica que fabrica aquele produto para requisitar o produto, caso o centro de distribuição não tenha o produto no estoque.
